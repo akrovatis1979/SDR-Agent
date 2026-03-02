@@ -22,7 +22,7 @@ class Tools:
             "rag_retrieve": (self._rag_retrieve, RAGInput),
         }
 
-    def _serach(self, args: SearchInput) -> str:
+    def _search(self, args: SearchInput) -> str:
         """Simulate a web search.
         
         Args:
