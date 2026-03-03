@@ -20,6 +20,18 @@ class ResearcherAgent:
             return "rag_retrieve"
         return "search"
     
+    def call_tool(self, name: str, args_dict: Dict[str, Any]) -> str:
+        if name not in self.tools.registry:
+            return f"[tool] unknown tool {name!r}"
+        fn, Schema = self.tools.registry[name]
+        try:
+            args = Schema(**args_dict)
+        except Exception as e:
+            return f"[tool] {name}] validation error: {e}"
+        if name == "remember":
+            return fn(args, mem=self.memory)
+        return fn(args)
+    
     def run(self, task: str, max_steps: int = 3, 
             tool_name: Optional[str] = None, tool_args: Optional[Disct[str, Any]] = None) -> str:
         thoughts = []
