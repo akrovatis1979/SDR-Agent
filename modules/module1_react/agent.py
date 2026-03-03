@@ -1,4 +1,4 @@
-from typing import Optional, Disct, Any
+from typing import Optional, Dict, Any
 from config import Config
 from .tools import Tools
 from .memory import Memory
@@ -20,3 +20,27 @@ class ResearcherAgent:
             return "rag_retrieve"
         return "search"
     
+    def run(self, task: str, max_steps: int = 3, 
+            tool_name: Optional[str] = None, tool_args: Optional[Disct[str, Any]] = None) -> str:
+        thoughts = []
+        local_args = tool_args
+        for i in range(max_steps):
+            thoughts.append(f"Step {i+1}: considering -> {task}")
+            chosen = tool_name or self._decide_tool(task)
+            if not chosen:
+                obs = "No tool chosen."
+            else:
+                if local_args is None:
+                    defaults = {
+                        "search": {"query": task, "top_k": 3},
+                        "calc": {"expression": task.replace("calc", "").strip() or "2+2"},
+                        "remember": {"note": task},
+                        "rag_retrieve": {"query": task, "k": 3}
+                    }
+                    local_args = defaults.get(chosen, {})
+                obs = self.call_tool(chosen, local_args)
+            thoughts.append(f"Observation: {obs}")
+            local_args = None
+        return self._llm("Summarize with citations if present:\n" + "\n".join(thoughts))
+    
+            
