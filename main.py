@@ -1,7 +1,7 @@
 from config import Config
 from modules.module2_rag.data_ingestion import ensure_playbook
 from modules.module2_rag.vector_store import TFIDFVectorStore
-from modules.module3_langgraph.graph import SimpleWorkflow
+#from modules.module3_langgraph.graph import SimpleWorkflow
 
 BANNER = """
 ===========================================================
