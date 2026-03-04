@@ -33,7 +33,7 @@ class ResearcherAgent:
         return fn(args)
     
     def run(self, task: str, max_steps: int = 3, 
-            tool_name: Optional[str] = None, tool_args: Optional[Disct[str, Any]] = None) -> str:
+            tool_name: Optional[str] = None, tool_args: Optional[Dict[str, Any]] = None) -> str:
         thoughts = []
         local_args = tool_args
         for i in range(max_steps):
