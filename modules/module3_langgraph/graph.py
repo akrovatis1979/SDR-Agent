@@ -49,5 +49,20 @@ class SimpleWorkflow:
 
         work_id = str(uuid.uuid4())
         state["work_id"] = work_id
-        self.save_state(work_id, state)
+        self._save_state(work_id, state)
         return state
+    
+    def decide(self, work_id: str, decision: str) -> Dict:
+        state = self._load_state(work_id)
+        if not state:
+            return {"error": "work item not found", "work_id": work_id}
+        
+        state["approval_decision"] = "approve" if decision.lower() == "approve" else "reject"
+        state = self.approval.run(state)
+
+        if state.get("approved"):
+            state = self.logger.run(state)
+
+        self._save_state(work_id, state)
+        return state
+    
