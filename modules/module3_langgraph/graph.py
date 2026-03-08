@@ -33,3 +33,21 @@ class SimpleWorkflow:
         if state.get("approved"):
             state = self.logger.run(state)
         return state
+    
+    def start(self, prospect: str, goal: str) -> Dict:
+        state = {"prospect": prospect, "goal": goal}
+        state = self.draft.run(state)
+        state = self.validate.run(state)
+
+        if not state["valid"]:
+            state = self. reflect.run(state)
+            state = self.validate.run(state) # re-validate after reflection
+
+        state["quality"] = quality_score(state.get("draft", ""))
+        state["approval_decision"] = None
+        state = self.approval.run(state)
+
+        work_id = str(uuid.uuid4())
+        state["work_id"] = work_id
+        self.save_state(work_id, state)
+        return state
